@@ -10,19 +10,17 @@ const app = express();
 const port = process.env.PORT || 4000;
 connectDB();
 
-const allowedOrigins = ['http://localhost:5173'];
-// Middleware - Order is perfect
+const allowedOrigins = ['http://localhost:5173', process.env.FRONTEND_URL];
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: allowedOrigins }));
 
-// Routes
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 
-app.listen(port, () => console.log(`Server started on port ${port}`));
-
-// Add this to your server.js
 app.get('/', (req, res) => {
     res.send("API Working Perfectly!");
 });
+
+app.listen(port, () => console.log(`Server started on port ${port}`));cd 
