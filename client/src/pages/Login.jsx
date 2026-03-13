@@ -222,7 +222,8 @@ const Login = () => {
   const navigate = useNavigate()
   const { backendUrl, setIsLoggedIn, getUserData } = useContext(AppContext)
 
-  const [state, setState] = useState('sign Up')
+  // FIX: Using consistent casing for state strings
+  const [state, setState] = useState('Login')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -230,13 +231,15 @@ const Login = () => {
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault()
+      // FIX: Ensure withCredentials is set for cookie handling
       axios.defaults.withCredentials = true
 
-      if (state === 'sign Up') {
+      if (state === 'Sign Up') {
         const { data } = await axios.post(backendUrl + '/api/auth/register', { name, email, password })
         if (data?.success) {
           setIsLoggedIn(true)
-          getUserData()
+          // FIX: Await getUserData to ensure state is updated before navigating
+          await getUserData()
           toast.success('Account created successfully!')
           navigate('/')
         } else {
@@ -246,7 +249,8 @@ const Login = () => {
         const { data } = await axios.post(backendUrl + '/api/auth/login', { email, password })
         if (data?.success) {
           setIsLoggedIn(true)
-          getUserData()
+          // FIX: Await getUserData to ensure state is updated before navigating
+          await getUserData()
           toast.success('Welcome back!')
           navigate('/')
         } else {
@@ -272,18 +276,18 @@ const Login = () => {
         <div className="auth-card">
           <p className="auth-eyebrow">Welcome</p>
           <h1 className="auth-title">
-            {state === 'sign Up' ? 'Create account' : 'Sign in'}
+            {state === 'Sign Up' ? 'Create account' : 'Sign in'}
           </h1>
           <p className="auth-subtitle">
-            {state === 'sign Up'
+            {state === 'Sign Up'
               ? 'Fill in your details to get started'
               : 'Enter your credentials to continue'}
           </p>
 
           <div className="auth-tabs">
             <button
-              className={`auth-tab ${state === 'sign Up' ? 'active' : ''}`}
-              onClick={() => setState('sign Up')}
+              className={`auth-tab ${state === 'Sign Up' ? 'active' : ''}`}
+              onClick={() => setState('Sign Up')}
               type="button"
             >
               Sign up
@@ -298,7 +302,7 @@ const Login = () => {
           </div>
 
           <form onSubmit={onSubmitHandler}>
-            {state === 'sign Up' && (
+            {state === 'Sign Up' && (
               <div className="auth-field">
                 <img src={assets.person_icon} alt="" className="auth-field-icon" />
                 <input
@@ -346,12 +350,12 @@ const Login = () => {
             )}
 
             <button className="auth-btn" type="submit">
-              {state === 'sign Up' ? 'Create account' : 'Sign in'}
+              {state === 'Sign Up' ? 'Create account' : 'Sign in'}
             </button>
           </form>
 
           <p className="auth-footer">
-            {state === 'sign Up' ? (
+            {state === 'Sign Up' ? (
               <>
                 Already have an account?{' '}
                 <span className="auth-footer-link" onClick={() => setState('Login')}>
@@ -361,7 +365,7 @@ const Login = () => {
             ) : (
               <>
                 No account yet?{' '}
-                <span className="auth-footer-link" onClick={() => setState('sign Up')}>
+                <span className="auth-footer-link" onClick={() => setState('Sign Up')}>
                   Sign up
                 </span>
               </>

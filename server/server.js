@@ -11,12 +11,30 @@ const app = express();
 const port = process.env.PORT || 4000;
 connectDB();
 
-const allowedOrigins = ['http://localhost:5173', 'https://mern-auntentication.vercel.app'];
+// Define allowed origins clearly
+const allowedOrigins = [
+    'http://localhost:5173', 
+    'https://mern-auntentication.vercel.app'
+];
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: allowedOrigins }));
 
+// CORS configuration for cross-origin cookies
+app.use(cors({ 
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true 
+}));
+
+// Routes
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 
@@ -28,6 +46,7 @@ app.listen(port, () => {
     console.log(`Server started on port ${port}`);
 
     // Keep alive - ping every 14 minutes to prevent Render sleeping
+    // Make sure the URL here is exactly your Render backend URL
     setInterval(() => {
         https.get('https://mern-auntentication-1.onrender.com', (res) => {
             console.log(`Keep alive ping: ${res.statusCode}`)
